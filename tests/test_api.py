@@ -47,7 +47,7 @@ def test_get_song_by_title_not_found():
 
 
 def test_rate_song_success():
-    song_id = "2jiI8bNSDu7UxTtDCOqh3L"  # exists in playlist
+    song_id = "2jiI8bNSDu7UxTtDCOqh3L"
     response = client.post(f"/songs/{song_id}/rate?rating=4.5")
     assert response.status_code == 200
     song = response.json()
