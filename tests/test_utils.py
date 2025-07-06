@@ -8,7 +8,7 @@ VALID_JSON_PATH = os.path.join("data", "sample.json")
 def test_normalize_valid_json():
     records = normalize_json(VALID_JSON_PATH)
     assert isinstance(records, list)
-    assert len(records) == 10
+    assert len(records) == 100
     assert all("id" in rec and "title" in rec for rec in records)
 
 

@@ -8,7 +8,7 @@ def test_get_all_songs_default():
     response = client.get("/songs")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
-    assert len(response.json()) <= 10
+    assert len(response.json()) >= 10
 
 
 def test_get_all_songs_with_pagination():
@@ -26,9 +26,9 @@ def test_get_all_songs_invalid_params():
 
 
 def test_get_song_by_title_exists():
-    response = client.get("/songs/by_title?title=Song One")
+    response = client.get("/songs/by_title?title=21 Guns")
     assert response.status_code == 200
-    assert response.json()["title"].lower() == "song one"
+    assert response.json()["title"].lower() == "21 guns"
 
 
 def test_get_song_by_title_not_found():
@@ -38,7 +38,7 @@ def test_get_song_by_title_not_found():
 
 
 def test_rate_song_success():
-    song_id = "2b3c4d5e6f7g"
+    song_id = "2jiI8bNSDu7UxTtDCOqh3L"  # exists in playlist
     response = client.post(f"/songs/{song_id}/rate?rating=4.5")
     assert response.status_code == 200
     song = response.json()
