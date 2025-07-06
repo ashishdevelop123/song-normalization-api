@@ -7,7 +7,7 @@ A lightweight, FastAPI-based backend that loads song data from a normalized JSON
 ## 🚀 Features
 
 - ✅ Load and normalize raw JSON song data on startup
-- 🔍 Filter and paginate songs
+- 🔍 Cursor-based pagination for consistent retrieval
 - 🎯 Query by song title
 - ⭐ Rate songs (with validation)
 - 🧪 Includes automated tests with `pytest`
@@ -77,7 +77,7 @@ docker build -t song-api .
 docker run -d -p 8000:8000 song-api
 ```
 
-Access the API at (http://localhost:8000)
+Access the API at [http://localhost:8000](http://localhost:8000)
 
 ---
 
@@ -91,17 +91,34 @@ pytest
 
 ## 🔍 API Endpoints
 
-| Method | Endpoint                  | Description                            |
-|--------|---------------------------|----------------------------------------|
-| GET    | `/songs`                  | Get all songs with optional pagination |
-| GET    | `/songs/by_title`        | Get song details by title              |
-| POST   | `/songs/{song_id}/rate`  | Update star rating for a song          |
+| Method | Endpoint                  | Description                                         |
+|--------|---------------------------|-----------------------------------------------------|
+| GET    | `/songs`                  | Get paginated songs using cursor-based pagination  |
+| GET    | `/songs/by_title`        | Get song details by title                          |
+| POST   | `/songs/{song_id}/rate`  | Update star rating for a song                      |
+
+### 📘 `/songs` Endpoint Details
+
+Supports cursor-based pagination:
+
+```http
+GET /songs?limit=5                 # first page
+GET /songs?cursor=<song_id>&limit=5  # next page using the last returned ID
+```
+
+Response:
+
+```json
+{
+  "items": ["obj1","obj2","obj3","obj4","obj5"],
+  "next_cursor": "abc123",
+  "has_more": true
+}
+```
 
 ---
 
 ## 📝 Notes
 
 - All data is loaded from `data/sample.json` at startup.
-- Ratings are stored in-memory (ephemeral).
-
----
+- Ratings are stored in-memory and reset on restart.

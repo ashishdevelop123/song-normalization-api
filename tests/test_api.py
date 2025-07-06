@@ -5,24 +5,33 @@ client = TestClient(app)
 
 
 def test_get_all_songs_default():
-    response = client.get("/songs")
-    assert response.status_code == 200
-    assert isinstance(response.json(), list)
-    assert len(response.json()) >= 10
-
-
-def test_get_all_songs_with_pagination():
-    response = client.get("/songs?skip=5&limit=3")
+    response = client.get("/songs?limit=5")
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list)
-    assert len(data) <= 3
+    assert "items" in data
+    assert isinstance(data["items"], list)
+    assert len(data["items"]) <= 5
+    assert "next_cursor" in data
+    assert "has_more" in data
+
+
+def test_get_all_songs_with_cursor_pagination():
+    first_page = client.get("/songs?limit=3")
+    assert first_page.status_code == 200
+    data = first_page.json()
+    assert "items" in data and len(data["items"]) == 3
+    next_cursor = data["next_cursor"]
+
+    second_page = client.get(f"/songs?cursor={next_cursor}&limit=3")
+    assert second_page.status_code == 200
+    next_data = second_page.json()
+    assert "items" in next_data
 
 
 def test_get_all_songs_invalid_params():
-    response = client.get("/songs?skip=-1&limit=5")
+    response = client.get("/songs?cursor=-1&limit=5")
     assert response.status_code == 400
-    assert "Invalid pagination parameters" in response.text
+    assert "Invalid cursor" in response.text
 
 
 def test_get_song_by_title_exists():
