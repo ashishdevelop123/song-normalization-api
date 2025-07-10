@@ -9,7 +9,7 @@ def test_normalize_valid_json():
     records = normalize_json(VALID_JSON_PATH)
     assert isinstance(records, list)
     assert len(records) == 100
-    assert all("id" in rec and "title" in rec for rec in records)
+    assert all(isinstance(rec.id, str) and isinstance(rec.title, str) for rec in records)
 
 
 def test_missing_required_field(tmp_path):
@@ -41,4 +41,4 @@ def test_invalid_type_coercion(tmp_path):
     file_path.write_text(str(bad_json).replace("'", '"'))
 
     records = normalize_json(str(file_path))
-    assert records[0]["danceability"] is None
+    assert records[0].danceability is None

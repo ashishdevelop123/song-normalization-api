@@ -1,5 +1,6 @@
 import json
 from typing import List, Dict, Any
+from app.models import Song
 
 REQUIRED_FIELDS = [
     "id", "title", "danceability", "energy", "mode", "acousticness",
@@ -9,7 +10,7 @@ REQUIRED_FIELDS = [
 OPTIONAL_FIELDS = ["star_rating"]
 
 
-def normalize_json(json_path: str) -> List[Dict[str, Any]]:
+def normalize_json(json_path: str) -> List[Song]:
     with open(json_path, 'r') as f:
         raw_data = json.load(f)
 
@@ -27,7 +28,7 @@ def normalize_json(json_path: str) -> List[Dict[str, Any]]:
             if field in REQUIRED_FIELDS and value is None:
                 raise ValueError(f"Missing value for required field '{field}' at row {i}")
             record[field] = parse_value(field, value)
-        records.append(record)
+        records.append(Song.model_construct(**record))
 
     return records
 
